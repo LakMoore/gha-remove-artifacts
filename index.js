@@ -112,7 +112,7 @@ async function run() {
 
   if (configs.skipTags) {
     try {
-      taggedCommits = await getTaggedCommits(octokit);
+      taggedCommits = await getTaggedCommits();
     } catch (err) {
       console.error("Error while requesting tags: ", err);
 
@@ -226,7 +226,9 @@ async function run() {
                   })
                   .catch(e => {
                     console.log(
-                      `Error on deleting (id: ${artifact.id}, name: ${artifact.name}): ${e.name}: ${e.message}.`
+                      `Error on deleting (id: ${artifact.id}, name: ${
+                        artifact.name
+                      }): ${JSON.stringify(e)}`
                     );
                   });
               })
