@@ -146,8 +146,10 @@ async function run() {
     })
     .then(workflowRuns => {
       console.log(`Found ${workflowRuns.length} workflow runs.`);
+      workflowRuns.sort((a, b) =>
+        moment(b.created_at).diff(moment(a.created_at))
+      );
       const artifactPromises = workflowRuns
-        .sort((a, b) => moment(b.created_at).diff(moment(a.created_at)))
         .filter(workflowRun => {
           const skipTaggedWorkflow =
             configs.skipTags && taggedCommits.includes(workflowRun.head_sha);
@@ -162,7 +164,7 @@ async function run() {
         })
         .map(workflowRun => {
           console.log(
-            `Examining workflow (name: ${workflowRun.name}) (id: ${workflowRun.id}) .`
+            `Examining workflow (name: ${workflowRun.name}) (id: ${workflowRun.id}) (created: ${workflowRun.created_at}).`
           );
           const workflowRunArtifactsRequest = octokit.actions.listWorkflowRunArtifacts.endpoint.merge(
             {
