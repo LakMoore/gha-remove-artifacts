@@ -10,6 +10,7 @@ const inputKeys = {
   AGE: devEnv ? "AGE" : "age",
   SKIP_TAGS: devEnv ? "SKIP_TAGS" : "skip-tags",
   SKIP_RECENT: devEnv ? "SKIP_RECENT" : "skip-recent",
+  BRANCH: devEnv ? "BRANCH" : "branch",
 };
 
 if (devEnv) {
@@ -29,6 +30,7 @@ function getConfigs() {
   const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
   const [age, units] = readInput(inputKeys.AGE, true).split(" ");
   const maxAge = moment().subtract(age, units);
+  const branch = readInput(inputKeys.BRANCH, false);
 
   console.log(
     "Maximum artifact age:",
@@ -36,7 +38,9 @@ function getConfigs() {
     units,
     "( created before",
     maxAge.format(),
-    ")"
+    ")",
+    "Branch:",
+    branch
   );
 
   const skipRecent = readInput(inputKeys.SKIP_RECENT);
@@ -61,7 +65,7 @@ function getConfigs() {
     skipTags: yn(readInput(inputKeys.SKIP_TAGS)),
     skipRecent: Number(skipRecent),
     retriesEnabled: true,
-    branchToConsider: "master",
+    branchToConsider: branch,
   };
 }
 
