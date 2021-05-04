@@ -145,6 +145,9 @@ async function run() {
       return data;
     })
     .then(workflowRuns => {
+
+      console.log(`Found ${workflowRuns.length} workflow runs.`);
+    
       const artifactPromises = workflowRuns
         .filter(workflowRun => {
           const skipTaggedWorkflow =
@@ -159,7 +162,7 @@ async function run() {
           return true;
         })
         .map(workflowRun => {
-          console.log(`Examinating workflow (id: ${workflowRun.id}).`);
+          console.log(`Examining workflow (id: ${workflowRun.id}).`);
           const workflowRunArtifactsRequest = octokit.actions.listWorkflowRunArtifacts.endpoint.merge(
             {
               ...configs.repo,
