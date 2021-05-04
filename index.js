@@ -145,13 +145,7 @@ async function run() {
       return data;
     })
     .then(workflowRuns => {
-
-      console.log(`Found ${workflowRuns.total_count} workflow run count.`);
       console.log(`Found ${workflowRuns.length} workflow runs.`);
-      if (workflowRuns.workflow_runs) {
-        console.log(`Found ${workflowRuns.workflow_runs.length} workflow runs.`);
-      }
-    
       const artifactPromises = workflowRuns
         .filter(workflowRun => {
           const skipTaggedWorkflow =
@@ -166,7 +160,9 @@ async function run() {
           return true;
         })
         .map(workflowRun => {
-          console.log(`Examining workflow (name: ${workflowRun.name}) (id: ${workflowRun.id}) .`);
+          console.log(
+            `Examining workflow (name: ${workflowRun.name}) (id: ${workflowRun.id}) .`
+          );
           const workflowRunArtifactsRequest = octokit.actions.listWorkflowRunArtifacts.endpoint.merge(
             {
               ...configs.repo,
@@ -201,6 +197,7 @@ async function run() {
 
                 return filtered;
               })
+              .sort((a, b) => moment(b.created_at).diff(moment(a.created_at)))
               .map(artifact => {
                 if (devEnv) {
                   return new Promise(resolve => {
@@ -227,7 +224,7 @@ async function run() {
                   })
                   .catch(e => {
                     console.log(
-                      `Error on deleting (id: ${artifact.id}, name: ${artifact.name}): ${e}.`
+                      `Error on deleting (id: ${artifact.id}, name: ${artifact.name}): ${e.name}: ${e.message}.`
                     );
                   });
               })
