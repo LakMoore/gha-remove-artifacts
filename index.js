@@ -147,6 +147,7 @@ async function run() {
     .then(workflowRuns => {
       console.log(`Found ${workflowRuns.length} workflow runs.`);
       const artifactPromises = workflowRuns
+        .sort((a, b) => moment(b.created_at).diff(moment(a.created_at)))
         .filter(workflowRun => {
           const skipTaggedWorkflow =
             configs.skipTags && taggedCommits.includes(workflowRun.head_sha);
@@ -197,7 +198,6 @@ async function run() {
 
                 return filtered;
               })
-              .sort((a, b) => moment(b.created_at).diff(moment(a.created_at)))
               .map(artifact => {
                 if (devEnv) {
                   return new Promise(resolve => {
